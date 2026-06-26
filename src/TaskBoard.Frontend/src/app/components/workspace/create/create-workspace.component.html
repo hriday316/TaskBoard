@@ -1,0 +1,26 @@
+<div class="min-h-screen bg-gray-50 px-4 py-10 flex items-center justify-center">
+    <mat-card class="w-full max-w-xl rounded-2xl p-6 shadow-lg">
+        <div class="mb-6">
+            <h1 class="text-2xl font-semibold text-gray-900">Create Workspace</h1>
+            <p class="mt-1 text-sm text-gray-500">Add a new workspace with a name and description.</p>
+        </div>
+
+        <form [formGroup]="createWorkspaceForm" (ngSubmit)="onSubmit()" class="space-y-4">
+            <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Workspace Name</mat-label>
+                <input matInput formControlName="name" placeholder="Enter workspace name" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Description</mat-label>
+                <textarea matInput rows="5" formControlName="description" placeholder="Enter workspace description"></textarea>
+            </mat-form-field>
+
+            <div class="flex justify-end pt-2">
+                <button mat-flat-button color="primary" type="submit" class="px-6" >
+                    Create
+                </button>
+            </div>
+        </form>
+    </mat-card>
+</div>

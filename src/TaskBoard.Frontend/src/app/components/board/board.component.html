@@ -1,0 +1,51 @@
+@if (board(); as board) {
+  <div class="w-full mx-auto overflow-x-auto ">
+    <h2 class="mb-5 text-2xl font-semibold text-gray-800">
+      {{ board.name }}
+    </h2>
+
+    <div
+      cdkDropListGroup
+      class="grid border-t border-l border-gray-200"
+      [style.grid-template-columns]="'auto repeat(' + totalColSpan() + ', 1fr)'"
+    >
+      <div class="bg-white border-b border-r border-gray-200"></div>
+
+      @for (column of board.columns; track column.id) {
+        <div
+          class="bg-white p-3 text-center font-semibold text-gray-700 shadow-sm border-b border-r border-gray-200"
+          [style.grid-column]="'span ' + column.columnSpan"
+        >
+          {{ column.name }}
+        </div>
+      }
+
+      @for (lane of board.lanes; track lane.id) {
+        <div class="bg-white flex gap-4 font-semibold px-6 border-b border-r border-gray-200">
+          <h2 class="flex items-center text-center">{{ lane.name }}</h2>
+        </div>
+
+        @for (column of board.columns; track column.id) {
+          
+          <div
+            class="bg-[#eff3f6] px-4 pb-3 min-h-[100px] border-b border-r border-gray-200"
+            [style.grid-column]="'span ' + (column.columnSpan || 1)"
+            cdkDropList
+            [cdkDropListData]="getCell(column.id, lane.id)"
+            (cdkDropListDropped)="drop($event)"
+          >
+          <div class="flex justify-end ">
+            <button class="pb-2 text-gray-600" (click)="openCreateCardModal(column.id, lane.id)">+</button>
+          </div>
+            @for (card of getCell(column.id, lane.id).cards; track card.id) {
+              <div class=" bg-white p-2 mb-2 shadow-sm rounded" (click)="goToCardDetails(card.id)" cdkDrag>
+                <h2 class="font-medium text-gray-800 ">{{ card.title }}</h2>
+                <p class="text-sm text-gray-600 mt-2">{{ card?.description ? card.description.slice(0, 100) + '...' : '' }}</p>
+              </div>
+            }
+          </div>
+        }
+      }
+    </div>
+  </div>
+}

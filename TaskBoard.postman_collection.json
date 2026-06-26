@@ -1,0 +1,360 @@
+{
+  "info": {
+    "_postman_id": "8adce905-ff53-4b29-a339-taskboard-api",
+    "name": "TaskBoard API",
+    "description": "TaskBoard backend API collection. Run Login before protected requests; Postman will keep the authentication cookie automatically. If HTTPS uses the local development certificate, disable SSL certificate verification in Postman settings.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "https://localhost:5001" },
+    { "key": "email", "value": "owner@example.com" },
+    { "key": "password", "value": "123456" },
+    { "key": "inviteeEmail", "value": "member@example.com" },
+    { "key": "workspaceId", "value": "" },
+    { "key": "boardId", "value": "" },
+    { "key": "columnId", "value": "" },
+    { "key": "laneId", "value": "" },
+    { "key": "cardId", "value": "" },
+    { "key": "workspaceMemberId", "value": "" },
+    { "key": "invitationId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"TaskBoard Owner\",\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/register"
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/login"
+          }
+        },
+        {
+          "name": "Current User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/user/me"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Workspaces",
+      "item": [
+        {
+          "name": "Create Workspace",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "const data = pm.response.json();",
+              "pm.collectionVariables.set('workspaceId', data.id);"
+            ]}
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"My Workspace\",\n  \"description\": \"Workspace created from Postman\"\n}"
+            },
+            "url": "{{baseUrl}}/api/workspace"
+          }
+        },
+        {
+          "name": "Get My Workspaces",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/workspace"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Boards",
+      "item": [
+        {
+          "name": "Get Workspace Boards",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "const boards = pm.response.json();",
+              "if (boards.length) pm.collectionVariables.set('boardId', boards[0].id);"
+            ]}
+          }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/workspaces/{{workspaceId}}/boards"
+          }
+        },
+        {
+          "name": "Create Board",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "const data = pm.response.json();",
+              "pm.collectionVariables.set('boardId', data.id);"
+            ]}
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Development Board\",\n  \"description\": \"Board created from Postman\"\n}"
+            },
+            "url": "{{baseUrl}}/api/workspaces/{{workspaceId}}/boards"
+          }
+        },
+        {
+          "name": "Get Board Details",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "const board = pm.response.json();",
+              "if (board.columns.length) pm.collectionVariables.set('columnId', board.columns[0].id);",
+              "if (board.lanes.length) pm.collectionVariables.set('laneId', board.lanes[0].id);"
+            ]}
+          }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/workspaces/{{workspaceId}}/boards/{{boardId}}"
+          }
+        },
+        {
+          "name": "Update Board",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Development Board\",\n  \"description\": \"Updated from Postman\"\n}"
+            },
+            "url": "{{baseUrl}}/api/workspaces/{{workspaceId}}/boards/{{boardId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Columns and Lanes",
+      "item": [
+        {
+          "name": "Create Column",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "const data = pm.response.json();",
+              "pm.collectionVariables.set('columnId', data.id);"
+            ]}
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Review\",\n  \"order\": 4,\n  \"columnSpan\": 1,\n  \"rowSpan\": 1,\n  \"color\": \"#3B82F6\",\n  \"isDefault\": false\n}"
+            },
+            "url": "{{baseUrl}}/api/workspaces/{{workspaceId}}/boards/{{boardId}}/columns"
+          }
+        },
+        {
+          "name": "Rename Column",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Code Review\"\n}" },
+            "url": "{{baseUrl}}/api/workspaces/{{workspaceId}}/boards/{{boardId}}/columns/{{columnId}}"
+          }
+        },
+        {
+          "name": "Create Lane",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "const data = pm.response.json();",
+              "pm.collectionVariables.set('laneId', data.id);"
+            ]}
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Backend\",\n  \"order\": 2,\n  \"color\": \"#10B981\"\n}"
+            },
+            "url": "{{baseUrl}}/api/workspaces/{{workspaceId}}/boards/{{boardId}}/lanes"
+          }
+        },
+        {
+          "name": "Rename Lane",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Backend Team\"\n}" },
+            "url": "{{baseUrl}}/api/workspaces/{{workspaceId}}/boards/{{boardId}}/lanes/{{laneId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cards",
+      "item": [
+        {
+          "name": "Create Card",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "const data = pm.response.json();",
+              "pm.collectionVariables.set('cardId', data.id);"
+            ]}
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"boardColumnId\": \"{{columnId}}\",\n  \"laneId\": \"{{laneId}}\",\n  \"title\": \"Test card from Postman\",\n  \"description\": \"Check the card flow\",\n  \"assignMemberId\": null\n}"
+            },
+            "url": "{{baseUrl}}/api/workspaces/{{workspaceId}}/boards/{{boardId}}/cards"
+          }
+        },
+        {
+          "name": "Get Card",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/workspaces/{{workspaceId}}/boards/{{boardId}}/cards/{{cardId}}"
+          }
+        },
+        {
+          "name": "Move Card",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"targetBoardColumnId\": \"{{columnId}}\",\n  \"targetLaneId\": \"{{laneId}}\",\n  \"targetOrder\": 1\n}"
+            },
+            "url": "{{baseUrl}}/api/workspaces/{{workspaceId}}/boards/{{boardId}}/cards/{{cardId}}/move"
+          }
+        },
+        {
+          "name": "Assign Workspace Member",
+          "request": {
+            "description": "Set workspaceMemberId in the collection variables before sending this request.",
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"memberId\": \"{{workspaceMemberId}}\"\n}" },
+            "url": "{{baseUrl}}/api/cards/{{cardId}}/assignments"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Comments",
+      "item": [
+        {
+          "name": "Create Comment",
+          "request": {
+            "description": "Set workspaceMemberId in the collection variables before sending this request.",
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"workspaceMemberId\": \"{{workspaceMemberId}}\",\n  \"content\": \"Comment created from Postman\"\n}"
+            },
+            "url": "{{baseUrl}}/api/cards/{{cardId}}/comments"
+          }
+        },
+        {
+          "name": "Get Card Comments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/cards/{{cardId}}/comments"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Invitations",
+      "item": [
+        {
+          "name": "Send Invitation",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "const invitationId = pm.response.json();",
+              "pm.collectionVariables.set('invitationId', invitationId);"
+            ]}
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"inviteeEmail\": \"{{inviteeEmail}}\",\n  \"role\": \"Member\"\n}"
+            },
+            "url": "{{baseUrl}}/api/workspaces/{{workspaceId}}/invitations"
+          }
+        },
+        {
+          "name": "Get My Invitations",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/invitations"
+          }
+        },
+        {
+          "name": "Get Invitation Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/invitations/{{invitationId}}"
+          }
+        },
+        {
+          "name": "Accept Invitation",
+          "request": {
+            "description": "Login as the invited user first, then send this request.",
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"Accepted\"\n}" },
+            "url": "{{baseUrl}}/api/invitations/{{invitationId}}"
+          }
+        },
+        {
+          "name": "Cancel Invitation",
+          "request": {
+            "description": "Login as the workspace owner before sending this request.",
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"Cancelled\"\n}" },
+            "url": "{{baseUrl}}/api/invitations/{{invitationId}}"
+          }
+        }
+      ]
+    }
+  ]
+}

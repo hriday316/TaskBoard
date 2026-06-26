@@ -1,0 +1,16 @@
+{
+  "cSpell.words": [
+    "Dtos",
+    "Mediat"
+  ],
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  "editor.quickSuggestions": {
+    "strings": "on"
+  },
+  "tailwindCSS.experimental.configFile": {
+    "src/TaskBoard.Frontend/src/tailwind.css": "src/TaskBoard.Frontend/src/**"
+  },
+  "angular.enable-strict-mode-prompt": false
+}

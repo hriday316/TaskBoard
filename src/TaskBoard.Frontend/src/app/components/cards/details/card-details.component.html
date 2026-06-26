@@ -1,0 +1,133 @@
+<div class="min-h-screen relative mx-auto" >
+<div class="   fixed top-20 left-5 md:left-20 lg:left-32   z-50">
+   <button
+    type="button"
+    class="mb-4 self-start flex text-blue-600 hover:text-white hover:bg-blue-800 px-3 py-1 rounded mt-3"
+    (click)="goBack()"
+  >
+    <span> ← </span><span class="ml-1">Back</span>
+  </button>
+</div>
+
+  @if (card(); as card) {
+    <div class="rounded-lg bg-white px-8 py-10 shadow-sm  max-w-4xl mx-auto">
+      <h1 class="text-xl mb-4 font-semibold text-gray-900">
+        {{ card.title }}
+      </h1>
+
+      <div class="mb-6">
+        <h2 class="mb-2 font-medium text-gray-700">Description</h2>
+        @if (card.description) {
+          <p class="text-gray-800 whitespace-pre-line">
+            {{ card.description }}
+          </p>
+        } @else {
+          <p class="text-gray-400">No description provided.</p>
+        }
+      </div>
+
+      <div class="mb-6">
+        <h2 class="mb-2 font-medium text-gray-700">Assigned User</h2>
+
+        @if (card.assignments && card.assignments.length > 0) {
+          <div class="flex flex-wrap gap-2">
+            @for (assignment of card.assignments; track assignment.userId) {
+              <div class="flex items-center gap-2 px-3 py-1.5">
+                <div
+                  class="flex h-6 w-6 items-center justify-center rounded-full bg-blue-300 text-xs font-medium text-gray-700"
+                >
+                  {{ assignment.userName?.charAt(0) }}
+                </div>
+
+                <span class="text-sm text-gray-700">
+                  {{ assignment.userName }}
+                </span>
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="text-gray-400">No user assigned.</p>
+        }
+      </div>
+
+      <div>
+        <h2 class="mb-2 font-medium text-gray-700">Attachments</h2>
+
+        @if (card.attachments && card.attachments.length > 0) {
+          <div class="space-y-2">
+            @for (attachment of card.attachments; track $index) {
+              <span class="text-sm text-blue-700 mr-4 py-2">
+                {{ attachment.split('/').pop() }}
+              </span>
+            }
+          </div>
+        } @else {
+          <p class="text-sm text-gray-400">No attachments uploaded.</p>
+        }
+      </div>
+    </div>
+  }
+
+ <hr class="my-4 max-w-4xl mx-auto border border-dashed border-gray-500" />
+<!-- Comments -->
+<div class="mt-6  max-w-3xl mx-auto border-t border-gray-100 pt-6">
+  <h2 class="mb-3 text-sm font-medium text-gray-700">
+    Comments
+  </h2>
+
+  <!-- Create Comment -->
+  <form
+    [formGroup]="form"
+    (ngSubmit)="onSubmit()"
+    class="mb-5"
+  >
+    <textarea
+      formControlName="message"
+      rows="3"
+      placeholder="Write a comment..."
+      class="w-full resize-none rounded-md border border-gray-200 px-3 py-2 text-sm text-gray-700 outline-none focus:border-gray-400"
+    ></textarea>
+
+    <div class="mt-2 flex justify-end">
+      <button
+        type="submit"
+        [disabled]="form.invalid || creatingComment()"
+        class="rounded-md bg-blue-700 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-300"
+      >
+         Comment
+      </button>
+    </div>
+  </form>
+
+ 
+
+  <!-- Comment List -->
+  @if ( comments().length > 0 && comments(); as comments) {
+    <div class="flex flex-wrap gap-2">
+            @for ( comment of comments; track comment.id) {
+              <div class="flex items-center gap-4 px-5 py-4 bg-gray-50 rounded-md w-full">
+                <div
+                  class="flex h-6 w-6 items-center justify-center rounded-full bg-blue-300 text-xs font-medium text-gray-700"
+                >
+                  {{ comment.userName?.charAt(0) }}
+                </div>
+
+                <div class="">
+                    <span class="text-sm font-medium text-gray-700">
+                        {{ comment.userName }}
+                    </span>
+                    <p class="text-sm text-gray-700">
+                        {{ comment.content }}
+                    </p>
+                </div>
+              </div>
+            }
+          </div>
+  } @else {
+    <p class="text-sm text-gray-400">
+      No comments yet.
+    </p>
+  }
+</div>
+
+</div>

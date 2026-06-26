@@ -1,0 +1,32 @@
+<div class="min-h-screen bg-gray-100 ">
+  <header class="h-16 bg-white  flex items-center gap-6 px-12">
+    <h1 class="text-xl font-semibold">TaskBoard</h1>
+
+      <select class="max-w-56 rounded-lg  bg-white  py-2"
+            [value]="selectedWorkspace()?.id || ''"
+            (change)="changeWorkspace($event)">
+      @for (workspace of workspaces(); track workspace.id) {
+        <option [value]="workspace.id">{{ workspace.name }}</option>
+      }
+       </select>
+    
+
+
+    @if (isBoardPage()) {
+      <nav class="flex items-center gap-5">
+        <a routerLink="/dashboard" class="text-gray-600">← All Boards</a>
+        <span class=" py-2 font-medium text-blue-600">Board View</span>
+         
+      </nav>
+    } @else {
+      <nav class="flex gap-5">
+        <a routerLink="/dashboard" routerLinkActive="font-bold">Dashboard</a>
+        <a routerLink="/invitations" routerLinkActive="font-bold">Invitations</a>
+      </nav>
+    }
+  </header>
+
+  <main class="py-6 px-12">
+    <router-outlet></router-outlet>
+  </main>
+</div>
